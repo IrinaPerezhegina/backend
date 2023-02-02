@@ -47,7 +47,6 @@ async function editNote(id, title) {
   const notes = await getNotes();
   const removeElementIndex = notes.findIndex((el) => el.id === id.toString());
   notes[removeElementIndex].title = title;
-  console.log(title);
   console.log(chalk.red(`Edit note by id=${id}`));
   await fs.writeFile(notesPath, JSON.stringify(notes));
 }

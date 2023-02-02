@@ -12,34 +12,72 @@ async function remove(id) {
     method: "DELETE",
   });
 }
-
+const blur = new Object();
 document.addEventListener("click", (event) => {
+  const data = event.target.closest("input")?.value;
+  if (data) {
+    blur.id = data;
+  }
   if (event.target.dataset.type === "edit") {
     const id = event.target.dataset.id;
-    console.log(event.target.closest("li").innerText);
-    let valueOfElement = event.target
-      .closest("li")
-      .innerText.split("\n")[0]
-      .trim();
-    valueOfElement;
-    const newValue = prompt("Введите новое название", valueOfElement);
-    if (newValue === null) {
-      return;
-    } else
-      edit(id, newValue).then(
-        () =>
-          (event.target.closest("li").innerHTML = `
-              ${newValue}
+
+    let get = event.target.closest("li").innerText.split("\n")[0];
+
+    event.target.closest("li").innerHTML = `
+              <input  type='text' id=${id} value='${
+      event.target.closest("li").innerText.split("\n")[0]
+    }' name='example'/>
               <div>
-                <button class="btn btn-primary" data-type="edit" data-id=${id}>
-                  Редактировать
+                <button class="btn btn-success" data-type="save" data-id=${id}>
+                  Обновить
                 </button>
-                <button class="btn btn-danger" data-type="remove" data-id=${id}>
-                  &times;
+                <button class="btn btn-danger" data-type="exit" data-id=${id}>
+                 Отменить
                 </button>
               </div>
-            `)
-      );
+            `;
+  } else if (event.target.dataset.type === "save") {
+    blur.id = undefined;
+    const id = event.target.dataset.id;
+    const valueOfElement = document.querySelector(
+      "input[name='example']"
+    ).value;
+    console.log(blur);
+    edit(id, valueOfElement).then(
+      () =>
+        (event.target.closest("li").innerHTML = `
+                    ${
+                      valueOfElement === ""
+                        ? "Введите значение"
+                        : valueOfElement
+                    }
+                    <div>
+                      <button class="btn btn-primary" data-type="edit" data-id=${id}>
+                       Обновить
+                      </button>
+                      <button class="btn btn-danger" data-type="remove" data-id=${id}>
+                        &times;
+                      </button>
+                    </div>
+                  `)
+    );
+  } else if (event.target.dataset.type === "exit") {
+    const id = event.target.dataset.id;
+    event.target.closest("li").innerHTML = `
+    ${
+      blur.id === undefined
+        ? document.querySelector("input[name='example']").value
+        : blur.id
+    }
+    <div>
+      <button class="btn btn-primary" data-type="edit" data-id=${id}>
+       Обновить
+      </button>
+      <button class="btn btn-danger" data-type="remove" data-id=${id}>
+        &times;
+      </button>
+    </div>
+  `;
   }
 });
 
